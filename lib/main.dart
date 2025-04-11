@@ -1,5 +1,10 @@
-import 'package:busca_filmes/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:busca_filmes/presentation/home_page.dart';
+import 'package:busca_filmes/application/movie/movie_bloc.dart';
+import 'package:busca_filmes/application/movie/movie_event.dart';
+import 'package:busca_filmes/data/datasources/omdb_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +16,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Busca Filmes',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: BlocProvider(
+        create: (context) => MovieBloc(OmdbService())..add(LoadInitialMovies()),
+        child: const HomePage(),
+      ),
     );
   }
 }

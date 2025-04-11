@@ -1,5 +1,14 @@
-import 'package:busca_filmes/details_movie.dart';
+import 'dart:math';
+
+import 'package:busca_filmes/application/movie/movie_state.dart';
+import 'package:busca_filmes/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../application/movie/movie_bloc.dart';
+import '../application/movie/movie_event.dart';
+import '../data/datasources/omdb_service.dart';
+import 'details_movie.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,6 +18,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final genericTerms = AppConstants.genericTerms;
+  final TextEditingController _searchController = TextEditingController();
+
   final List<Map<String, String>> listMovies = List.generate(
     15,
     (index) => {
@@ -30,6 +42,17 @@ class _HomePageState extends State<HomePage> {
       'summary': 'Summary $index'
     },
   );
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +95,10 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: TextField(
-                  decoration: InputDecoration(
+                  controller: _searchController,
+                  decoration: const InputDecoration(
                     hintText: 'Nome do filme...',
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.symmetric(horizontal: 8),
@@ -83,64 +107,92 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(width: 10),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  final query = _searchController.text.trim();
+                  if (query.isNotEmpty) {
+                    context.read<MovieBloc>().add(SearchMovies(query));
+                  }
+                },
                 child: const Text('Buscar'),
               )
             ],
           ),
         ),
 
-        //Grid de filmes
+        // Resultado da busca
         Expanded(
-            child: Container(
-          color: Colors.white,
-          margin: const EdgeInsets.only(left: 8, right: 8),
-          child: GridView.builder(
-            itemCount: listMovies.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 0.75,
-            ),
-            itemBuilder: (context, index) {
-              final item = listMovies[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => DetailsMovie(
-                                title: item['title']!,
-                                imageUrl: item['imageUrl']!,
-                                date: item['date']!,
-                                genre: item['genre']!,
-                                summary: item['summary']!,
-                              )));
-                },
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Image.network(
-                        item['imageUrl']!,
-                        fit: BoxFit.cover,
+          child: BlocBuilder<MovieBloc, MovieState>(
+            builder: (context, state) {
+              if (state is MovieLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is MovieLoaded) {
+                final movies = state.movies;
+
+                if (movies.isEmpty) {
+                  return const Center(child: Text("Nenhum filme encontrado."));
+                }
+
+                return GridView.builder(
+                  itemCount: movies.length,
+                  padding: const EdgeInsets.all(8),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.75,
+                  ),
+                  itemBuilder: (context, index) {
+                    final movie = movies[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailsMovie(
+                              title: movie.title,
+                              imageUrl: movie.poster,
+                              date: movie.year,
+                              genre: movie.type,
+                              summary: 'Sem sinopse disponível',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Image.network(
+                              movie.poster,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Center(child: Icon(Icons.broken_image));
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            movie.title,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            movie.year,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      item['title']!,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      item['date']!,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              );
+                    );
+                  },
+                );
+              } else if (state is MovieError) {
+                return Center(child: Text('Erro: ${state.message}'));
+              } else {
+                return const Center(child: Text("Busque um filme para começar."));
+              }
             },
           ),
-        )),
+        ),
       ],
     );
   }
