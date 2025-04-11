@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../application/movie/movie_bloc.dart';
 import '../../application/movie/movie_event.dart';
 import '../../application/movie/movie_state.dart';
+import '../../core/storage/movie_storage.dart';
 import 'movie_grid.dart';
 
 class SearchTab extends StatelessWidget {

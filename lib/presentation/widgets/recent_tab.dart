@@ -1,9 +1,7 @@
+import 'package:busca_filmes/core/storage/movie_storage.dart';
+import 'package:busca_filmes/domain/entities/movie_model.dart';
+import 'package:busca_filmes/presentation/widgets/movie_grid.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../application/movie/movie_bloc.dart';
-import '../../application/movie/movie_state.dart';
-import 'movie_grid.dart';
 
 class RecentTab extends StatelessWidget {
   const RecentTab({super.key});
@@ -11,16 +9,18 @@ class RecentTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: BlocBuilder<MovieBloc, MovieState>(
-        builder: (context, state) {
-          if (state is MovieLoaded) {
-            return MovieGrid(movies: state.movies);
-          } else if (state is MovieLoading) {
+      child: FutureBuilder<List<MovieModel>>(
+        future: MovieStorage.getRecentMovies(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is MovieError) {
-            return Center(child: Text('Erro: ${state.message}'));
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Erro: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('Nenhum filme pesquisado recentement'));
           }
-          return const SizedBox.shrink();
+
+          return MovieGrid(movies: snapshot.data!);
         },
       ),
     );

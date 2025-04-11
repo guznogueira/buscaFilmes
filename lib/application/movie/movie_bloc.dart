@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/datasources/omdb_service.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/storage/movie_storage.dart';
 import 'movie_event.dart';
 import 'movie_state.dart';
 
@@ -32,6 +33,11 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
     emit(MovieLoading());
     try {
       final movies = await omdbService.searchMovies(event.query);
+
+      if (movies.isNotEmpty) {
+        await MovieStorage.saveRecentMovie(movies.first);
+      }
+
       emit(MovieLoaded(movies));
     } catch (e) {
       emit(MovieError(e.toString()));
