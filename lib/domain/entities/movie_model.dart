@@ -2,15 +2,17 @@ class MovieModel {
   final String title;
   final String year;
   final String imdbId;
-  final String type;
+  final String genre;
   final String poster;
+  final String plot;
 
   MovieModel({
-    required this.title,
-    required this.year,
-    required this.imdbId,
-    required this.type,
-    required this.poster,
+    this.title = '',
+    this.year = '',
+    this.imdbId = '',
+    this.genre = '',
+    this.poster = '',
+    this.plot = '',
   });
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
@@ -18,8 +20,9 @@ class MovieModel {
       title: json['Title'] ?? '',
       year: json['Year'] ?? '',
       imdbId: json['imdbID'] ?? '',
-      type: json['Type'] ?? '',
+      genre: json['Genre'] ?? '',
       poster: json['Poster'] ?? '',
+      plot: json['Plot'] ?? '',
     );
   }
 }

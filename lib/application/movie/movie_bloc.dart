@@ -14,8 +14,10 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
   MovieBloc(this.omdbService) : super(MovieInitial()) {
     on<LoadInitialMovies>(_onLoadInitialMovies);
     on<SearchMovies>(_onSearchMovies);
+    on<GetMovie>(_onGetMovie);
   }
 
+  // Busca uma lista aleatória de filmes
   Future<void> _onLoadInitialMovies(LoadInitialMovies event, Emitter<MovieState> emit) async {
     emit(MovieLoading());
     try {
@@ -23,12 +25,13 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
       const genericTerms = AppConstants.genericTerms;
       final randomTerm = genericTerms[random.nextInt(genericTerms.length)];
       final movies = await omdbService.searchMovies(randomTerm);
-      emit(MovieLoaded(movies));
+      emit(MoviesLoaded(movies));
     } catch (e) {
       emit(MovieError(e.toString()));
     }
   }
 
+  // Busca uma lista de filmes pelo nome
   Future<void> _onSearchMovies(SearchMovies event, Emitter<MovieState> emit) async {
     emit(MovieLoading());
     try {
@@ -38,7 +41,19 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
         await MovieStorage.saveRecentMovie(movies.first);
       }
 
-      emit(MovieLoaded(movies));
+      emit(MoviesLoaded(movies));
+    } catch (e) {
+      emit(MovieError(e.toString()));
+    }
+  }
+
+  // Busca um filme pelo id
+  Future<void> _onGetMovie(GetMovie event, Emitter<MovieState> emit) async {
+    emit(MovieLoading());
+    try {
+      final movie = await omdbService.getMovie(event.query);
+
+      emit(MovieLoaded(movie));
     } catch (e) {
       emit(MovieError(e.toString()));
     }

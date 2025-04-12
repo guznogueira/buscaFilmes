@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:busca_filmes/domain/entities/movie_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MovieStorage {
   static const _key = 'recent_movies';
@@ -15,7 +16,6 @@ class MovieStorage {
       'title': movie.title,
       'year': movie.year,
       'imdbId': movie.imdbId,
-      'type': movie.type,
       'poster': movie.poster,
     });
 
@@ -47,7 +47,6 @@ class MovieStorage {
         title: map['title'],
         year: map['year'],
         imdbId: map['imdbId'],
-        type: map['type'],
         poster: map['poster'],
       );
     }).toList();

@@ -1,7 +1,9 @@
 import 'package:busca_filmes/domain/entities/movie_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../application/movie/movie_bloc.dart';
 import '../details_movie.dart';
 
 class MovieCard extends StatelessWidget {
@@ -16,12 +18,9 @@ class MovieCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => DetailsMovie(
-              title: movie.title,
-              imageUrl: movie.poster,
-              date: movie.year,
-              genre: movie.type,
-              summary: 'Sem sinopse disponível',
+            builder: (_) => BlocProvider.value(
+              value: context.read<MovieBloc>(),
+              child: DetailsMovie(imdbId: movie.imdbId),
             ),
           ),
         );

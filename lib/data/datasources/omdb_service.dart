@@ -8,7 +8,7 @@ class OmdbService {
   final String _baseUrl = AppConstants.omdbBaseUrl;
   final String _apiKey = AppConstants.omdbApiKey;
 
-  /// Busca filmes por um termo e opcionalmente por página
+  // Busca filmes pelo nome
   Future<List<MovieModel>> searchMovies(String query) async {
     try {
       final response = await _dio.get(_baseUrl, queryParameters: {'s': query, 'apikey': _apiKey});
@@ -22,6 +22,22 @@ class OmdbService {
     } catch (e) {
       print('Dio Error: $e');
       return [];
+    }
+  }
+
+  // Busca um filme pelo id
+  Future<MovieModel> getMovie(String query) async {
+    try {
+      final response = await _dio.get(_baseUrl, queryParameters: {'i': query, 'apikey': _apiKey});
+
+      if (response.statusCode == 200) {
+        return MovieModel.fromJson(response.data);
+      } else {
+        throw Exception('Erro ao buscar o filme');
+      }
+    } catch (e) {
+      print('Dio Error: $e');
+      rethrow;
     }
   }
 }

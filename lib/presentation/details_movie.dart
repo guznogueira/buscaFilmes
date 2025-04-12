@@ -1,64 +1,71 @@
+import 'package:busca_filmes/application/movie/movie_event.dart';
+import 'package:busca_filmes/application/movie/movie_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../application/movie/movie_bloc.dart';
 
 class DetailsMovie extends StatelessWidget {
-  final String title;
-  final String imageUrl;
-  final String date;
-  final String genre;
-  final String summary;
+  final String imdbId;
 
-  const DetailsMovie({
-    super.key,
-    required this.title,
-    required this.imageUrl,
-    required this.date,
-    required this.genre,
-    required this.summary,
-  });
+  const DetailsMovie({super.key, required this.imdbId});
 
   @override
   Widget build(BuildContext context) {
+    context.read<MovieBloc>().add(GetMovie(imdbId));
+
     return Scaffold(
-      //Appbar
       appBar: AppBar(
-        title: const Text('Detalhes', style: TextStyle(color: Colors.white),),
+        title: const Text('Detalhes', style: TextStyle(color: Colors.white)),
         leading: const BackButton(),
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.blue,
         elevation: 4,
       ),
-
-      //Body
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 300,
-              child: Image.network(imageUrl),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Text('Data: $date', style: Theme.of(context).textTheme.bodyMedium),
-                ),
-                Expanded(
-                  child: Text('Gênero: $genre', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.right),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
+        child: BlocBuilder<MovieBloc, MovieState>(
+          builder: (context, state) {
+            if (state is MovieLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is MovieError) {
+              return Center(child: Text('Erro: ${state.message}'));
+            } else if (state is MovieLoaded) {
+              final movie = state.movie;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(movie.title, style: Theme.of(context).textTheme.headlineSmall),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.maxFinite,
+                    height: 500,
+                    child: Image.network(
+                      movie.poster,
+                      fit: BoxFit.contain,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                      errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Text('Ano: ${movie.year}'),
+                      const SizedBox(width: 12),
+                      Expanded(child: Text('Gênero: ${movie.genre}', textAlign: TextAlign.right)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(movie.plot),
+                ],
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
         ),
       ),
     );

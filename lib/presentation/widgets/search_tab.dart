@@ -13,6 +13,7 @@ class SearchTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController searchController = TextEditingController();
+    context.read<MovieBloc>().add(LoadInitialMovies());
 
     return Column(
       children: [
@@ -50,7 +51,7 @@ class SearchTab extends StatelessWidget {
         Expanded(
           child: BlocBuilder<MovieBloc, MovieState>(
             builder: (context, state) {
-              if (state is MovieLoaded) {
+              if (state is MoviesLoaded) {
                 return MovieGrid(movies: state.movies);
               } else if (state is MovieLoading) {
                 return const Center(child: CircularProgressIndicator());
