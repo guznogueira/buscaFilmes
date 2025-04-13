@@ -52,39 +52,43 @@ class _DetailsMovieState extends State<DetailsMovie> {
               return Center(child: Text('Erro: ${state.message}'));
             } else if (state is DetailsMovieLoaded) {
               final movie = state.movie;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              return ListView(
                 children: [
-                  // Título
-                  Text(movie.title, style: Theme.of(context).textTheme.headlineSmall),
-                  const SizedBox(height: 12),
-
-                  // Poster
-                  SizedBox(
-                    width: double.maxFinite,
-                    height: 500,
-                    child: Image.network(
-                      movie.poster,
-                      fit: BoxFit.contain,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return const Center(child: CircularProgressIndicator());
-                      },
-                      errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image)),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Ano e Gênero
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Ano: ${movie.year}'),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text('Gênero: ${movie.genre}', textAlign: TextAlign.right)),
+                      // Título
+                      Text(movie.title, style: Theme.of(context).textTheme.headlineSmall),
+                      const SizedBox(height: 12),
+
+                      // Poster
+                      SizedBox(
+                        width: double.maxFinite,
+                        height: 500,
+                        child: Image.network(
+                          movie.poster,
+                          fit: BoxFit.contain,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(child: CircularProgressIndicator());
+                          },
+                          errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image)),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Ano e Gênero
+                      Row(
+                        children: [
+                          Text('Ano: ${movie.year}'),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text('Gênero: ${movie.genre}', textAlign: TextAlign.right)),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(movie.plot),
                     ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(movie.plot),
+                  )
                 ],
               );
             }

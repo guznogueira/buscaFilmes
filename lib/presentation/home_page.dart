@@ -2,6 +2,10 @@ import 'package:busca_filmes/core/constants/app_constants.dart';
 import 'package:busca_filmes/presentation/widgets/recent_tab.dart';
 import 'package:busca_filmes/presentation/widgets/search_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../application/movie/movie_bloc.dart';
+import '../application/movie/movie_event.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    context.read<MovieBloc>().add(LoadInitialMovies());
   }
 
   @override

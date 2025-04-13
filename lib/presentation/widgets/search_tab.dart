@@ -21,7 +21,6 @@ class _SearchTabState extends State<SearchTab> {
   @override
   void initState() {
     super.initState();
-    context.read<MovieBloc>().add(LoadInitialMovies());
 
     searchController = TextEditingController();
     searchFocusNode = FocusNode();
