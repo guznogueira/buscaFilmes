@@ -42,11 +42,11 @@ class MovieGrid extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => BlocProvider<MovieBloc>.value(
           value: bloc,
-          child: DetailsMovie(imdbId: movie.imdbId),
+          child: DetailsMovie(movie: movie),
         ),
       ),
     );
 
-    bloc.add(RefreshMovies(movies));
+    bloc.add(RefreshListMovies(movies));
   }
 }

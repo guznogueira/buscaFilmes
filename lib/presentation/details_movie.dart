@@ -1,24 +1,30 @@
 import 'package:busca_filmes/application/movie/movie_event.dart';
 import 'package:busca_filmes/application/movie/movie_state.dart';
+import 'package:busca_filmes/domain/entities/movie_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../application/movie/movie_bloc.dart';
 
 class DetailsMovie extends StatefulWidget {
-  final String imdbId;
+  final MovieModel movie;
 
-  const DetailsMovie({super.key, required this.imdbId});
+  const DetailsMovie({super.key, required this.movie});
 
   @override
   State<DetailsMovie> createState() => _DetailsMovieState();
 }
 
 class _DetailsMovieState extends State<DetailsMovie> {
+  late MovieModel movie;
+
+  _DetailsMovieState();
+
   @override
   void initState() {
     super.initState();
-    context.read<MovieBloc>().add(GetMovie(widget.imdbId));
+    movie = widget.movie;
+    context.read<MovieBloc>().add(GetDetailsMovie(movie));
   }
 
   @override
@@ -44,13 +50,16 @@ class _DetailsMovieState extends State<DetailsMovie> {
               return const Center(child: CircularProgressIndicator());
             } else if (state is MovieError) {
               return Center(child: Text('Erro: ${state.message}'));
-            } else if (state is MovieLoaded) {
+            } else if (state is DetailsMovieLoaded) {
               final movie = state.movie;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Título
                   Text(movie.title, style: Theme.of(context).textTheme.headlineSmall),
                   const SizedBox(height: 12),
+
+                  // Poster
                   SizedBox(
                     width: double.maxFinite,
                     height: 500,
@@ -65,6 +74,8 @@ class _DetailsMovieState extends State<DetailsMovie> {
                     ),
                   ),
                   const SizedBox(height: 12),
+
+                  // Ano e Gênero
                   Row(
                     children: [
                       Text('Ano: ${movie.year}'),

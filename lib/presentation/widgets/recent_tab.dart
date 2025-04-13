@@ -2,6 +2,8 @@ import 'package:busca_filmes/core/storage/movie_storage.dart';
 import 'package:busca_filmes/domain/entities/movie_model.dart';
 import 'package:flutter/material.dart';
 
+import 'movie_grid.dart';
+
 class RecentTab extends StatelessWidget {
   const RecentTab({super.key});
 
@@ -14,13 +16,13 @@ class RecentTab extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Erro: ${snapshot.error}'));
+            print('Error: ${snapshot.error}');
+            return const Center(child: Text('Desculpe, ocorreu um erro'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Nenhum filme pesquisado recentement'));
+            return const Center(child: Text('Nenhum filme pesquisado'));
           }
 
-          return SizedBox.shrink();
-          // return MovieGrid(movies: snapshot.data!);
+          return MovieGrid(movies: snapshot.data!);
         },
       ),
     );

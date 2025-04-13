@@ -2,22 +2,26 @@ import 'package:busca_filmes/domain/entities/movie_model.dart';
 
 abstract class MovieEvent {}
 
+// Evento pesquisar um filme pelo nome
 class SearchMovies extends MovieEvent {
-  final String query;
+  final String nameMovie;
 
-  SearchMovies(this.query);
+  SearchMovies(this.nameMovie);
 }
 
+// Evento busca uma lista aleatoria de filmes
 class LoadInitialMovies extends MovieEvent {}
 
-class GetMovie extends MovieEvent {
-  final String query;
+// Evento busca um filme pelo id
+class GetDetailsMovie extends MovieEvent {
+  final MovieModel movie;
 
-  GetMovie(this.query);
+  GetDetailsMovie(this.movie);
 }
 
-class RefreshMovies extends MovieEvent {
-  final List<MovieModel> movies;
+// Evento recarrega lista de filmes da home
+class RefreshListMovies extends MovieEvent {
+  final List<MovieModel> listMovies;
 
-  RefreshMovies(this.movies);
+  RefreshListMovies(this.listMovies);
 }

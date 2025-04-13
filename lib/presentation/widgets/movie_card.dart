@@ -14,6 +14,7 @@ class MovieCard extends StatelessWidget {
       onTap: () => onTap(movie),
       child: Column(
         children: [
+          // Poster
           Expanded(
             child: Image.network(
               movie.poster,
@@ -35,12 +36,16 @@ class MovieCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
+
+          // Título
           Text(
             movie.title,
             style: const TextStyle(fontWeight: FontWeight.bold),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
+
+          // Ano
           Text(
             movie.year,
             style: const TextStyle(color: Colors.grey),

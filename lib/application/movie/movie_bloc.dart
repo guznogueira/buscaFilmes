@@ -15,8 +15,8 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
   MovieBloc(this.omdbService) : super(MovieInitial()) {
     on<LoadInitialMovies>(_onLoadInitialMovies);
     on<SearchMovies>(_onSearchMovies);
-    on<GetMovie>(_onGetMovie);
-    on<RefreshMovies>(_onRefreshMovies);
+    on<GetDetailsMovie>(_onGetDetailsMovie);
+    on<RefreshListMovies>(_onRefreshListMovies);
   }
 
   // Busca uma lista aleatória de filmes
@@ -37,11 +37,7 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
   Future<void> _onSearchMovies(SearchMovies event, Emitter<MovieState> emit) async {
     emit(MovieLoading());
     try {
-      final movies = await omdbService.searchMovies(event.query);
-
-      if (movies.isNotEmpty) {
-        await MovieStorage.saveRecentMovie(movies.first);
-      }
+      final movies = await omdbService.searchMovies(event.nameMovie);
 
       emit(MoviesLoaded(movies));
     } catch (e) {
@@ -49,22 +45,32 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
     }
   }
 
-  // Busca um filme pelo id
-  Future<void> _onGetMovie(GetMovie event, Emitter<MovieState> emit) async {
+  // Busca um filme pelo id, para ter os detalhes
+  Future<void> _onGetDetailsMovie(GetDetailsMovie event, Emitter<MovieState> emit) async {
     emit(MovieLoading());
     try {
-      final movie = await omdbService.getMovie(event.query);
+      MovieModel movie;
 
-      emit(MovieLoaded(movie));
+      // Caso esteja pequisando o filme pela primeira vez, ira buscar mais informações e salvar no preferences
+      if (event.movie.plot.isEmpty) {
+        movie = await omdbService.getDetailsMovie(event.movie.imdbId);
+        await MovieStorage.saveRecentMovie(movie);
+      }
+      // Caso ja tenha pesquisado o filme, as informações estarão no preferences
+      else {
+        movie = event.movie;
+      }
+
+      emit(DetailsMovieLoaded(movie));
     } catch (e) {
       emit(MovieError(e.toString()));
     }
   }
 
-  // Recarrega os filmes na home
-  Future<void> _onRefreshMovies(RefreshMovies event, Emitter<MovieState> emit) async {
+  // Recarrega os filmes ao voltar para Home
+  Future<void> _onRefreshListMovies(RefreshListMovies event, Emitter<MovieState> emit) async {
     try {
-      List<MovieModel> movies = event.movies;
+      List<MovieModel> movies = event.listMovies;
       emit(MoviesLoaded(movies));
     } catch (e) {
       emit(MovieError(e.toString()));

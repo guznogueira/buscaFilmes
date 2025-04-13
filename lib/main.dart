@@ -1,10 +1,8 @@
+import 'package:busca_filmes/application/movie/movie_bloc.dart';
+import 'package:busca_filmes/data/datasources/omdb_service.dart';
+import 'package:busca_filmes/presentation/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:busca_filmes/presentation/home_page.dart';
-import 'package:busca_filmes/application/movie/movie_bloc.dart';
-import 'package:busca_filmes/application/movie/movie_event.dart';
-import 'package:busca_filmes/data/datasources/omdb_service.dart';
 
 void main() {
   runApp(const MyApp());

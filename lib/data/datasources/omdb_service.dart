@@ -26,7 +26,7 @@ class OmdbService {
   }
 
   // Busca um filme pelo id
-  Future<MovieModel> getMovie(String query) async {
+  Future<MovieModel> getDetailsMovie(String query) async {
     try {
       final response = await _dio.get(_baseUrl, queryParameters: {'i': query, 'apikey': _apiKey});
 

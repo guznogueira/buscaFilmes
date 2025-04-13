@@ -26,12 +26,14 @@ class _SearchTabState extends State<SearchTab> {
     searchController = TextEditingController();
     searchFocusNode = FocusNode();
 
+    // Controle para mostrar ou não o botão para limpar campo de texto
     searchController.addListener(() {
       setState(() {
         showClearIcon = searchController.text.isNotEmpty;
       });
     });
 
+    // Remove o foco do campo de texto ao abrir a tela
     WidgetsBinding.instance.addPostFrameCallback((_) {
       searchFocusNode.unfocus();
     });
@@ -90,7 +92,7 @@ class _SearchTabState extends State<SearchTab> {
           child: BlocBuilder<MovieBloc, MovieState>(
             builder: (context, state) {
               if (state is MoviesLoaded) {
-                return MovieGrid(movies: state.movies);
+                return MovieGrid(movies: state.listMovies);
               } else if (state is MovieLoading) {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is MovieError) {

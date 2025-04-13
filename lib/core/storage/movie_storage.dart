@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MovieStorage {
   static const _key = 'recent_movies';
 
-  // Salvar um novo filme
+  // Salvar um novo filme nos preferences
   static Future<void> saveRecentMovie(MovieModel movie) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> recentMovies = prefs.getStringList(_key) ?? [];
@@ -16,7 +16,9 @@ class MovieStorage {
       'title': movie.title,
       'year': movie.year,
       'imdbId': movie.imdbId,
+      'genre': movie.genre,
       'poster': movie.poster,
+      'plot': movie.plot,
     });
 
     // Remove duplicados (se já existir)
@@ -36,7 +38,7 @@ class MovieStorage {
     await prefs.setStringList(_key, recentMovies);
   }
 
-  // Recuperar a lista de filmes
+  // Recuperar a lista de filmes do preferences
   static Future<List<MovieModel>> getRecentMovies() async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> recentMovies = prefs.getStringList(_key) ?? [];
@@ -47,7 +49,9 @@ class MovieStorage {
         title: map['title'],
         year: map['year'],
         imdbId: map['imdbId'],
+        genre: map['genre'],
         poster: map['poster'],
+        plot: map['plot'],
       );
     }).toList();
   }
