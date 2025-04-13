@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../application/movie/movie_bloc.dart';
 import '../../application/movie/movie_event.dart';
 import '../../application/movie/movie_state.dart';
-import '../details_movie.dart';
 import 'movie_grid.dart';
 
 class SearchTab extends StatefulWidget {
@@ -17,16 +15,31 @@ class SearchTab extends StatefulWidget {
 
 class _SearchTabState extends State<SearchTab> {
   late TextEditingController searchController;
+  late FocusNode searchFocusNode;
+  bool showClearIcon = false;
 
   @override
   void initState() {
     super.initState();
-    searchController = TextEditingController();
     context.read<MovieBloc>().add(LoadInitialMovies());
+
+    searchController = TextEditingController();
+    searchFocusNode = FocusNode();
+
+    searchController.addListener(() {
+      setState(() {
+        showClearIcon = searchController.text.isNotEmpty;
+      });
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      searchFocusNode.unfocus();
+    });
   }
 
   @override
   void dispose() {
+    searchFocusNode.dispose();
     searchController.dispose();
     super.dispose();
   }
@@ -44,11 +57,18 @@ class _SearchTabState extends State<SearchTab> {
               Expanded(
                 child: TextField(
                   controller: searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Nome do filme...',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                  ),
+                  focusNode: searchFocusNode,
+                  decoration: InputDecoration(
+                      hintText: 'Nome do filme...',
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      suffixIcon: showClearIcon
+                          ? IconButton(
+                              onPressed: () {
+                                searchController.clear();
+                              },
+                              icon: const Icon(Icons.clear))
+                          : null),
                 ),
               ),
               const SizedBox(width: 10),
