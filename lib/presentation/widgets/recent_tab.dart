@@ -10,22 +10,20 @@ class RecentTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: FutureBuilder<List<MovieModel>>(
-        future: MovieStorage.getRecentMovies(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            print('Error: ${snapshot.error}');
-            return const Center(child: Text('Desculpe, ocorreu um erro'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Nenhum filme pesquisado'));
-          }
+    return FutureBuilder<List<MovieModel>>(
+      future: MovieStorage.getRecentMovies(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          print('Error: ${snapshot.error}');
+          return const Center(child: Text('Desculpe, ocorreu um erro'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('Nenhum filme pesquisado'));
+        }
 
-          return MovieGrid(movies: snapshot.data!, tab: AppConstants.tabRecents);
-        },
-      ),
+        return MovieGrid(movies: snapshot.data!, tab: AppConstants.tabRecents);
+      },
     );
   }
 }
