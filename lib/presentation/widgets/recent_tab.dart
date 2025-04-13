@@ -1,6 +1,5 @@
 import 'package:busca_filmes/core/storage/movie_storage.dart';
 import 'package:busca_filmes/domain/entities/movie_model.dart';
-import 'package:busca_filmes/presentation/widgets/movie_grid.dart';
 import 'package:flutter/material.dart';
 
 class RecentTab extends StatelessWidget {
@@ -20,7 +19,8 @@ class RecentTab extends StatelessWidget {
             return const Center(child: Text('Nenhum filme pesquisado recentement'));
           }
 
-          return MovieGrid(movies: snapshot.data!);
+          return SizedBox.shrink();
+          // return MovieGrid(movies: snapshot.data!);
         },
       ),
     );

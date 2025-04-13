@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/datasources/omdb_service.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/storage/movie_storage.dart';
+import '../../domain/entities/movie_model.dart';
 import 'movie_event.dart';
 import 'movie_state.dart';
 
@@ -15,6 +16,7 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
     on<LoadInitialMovies>(_onLoadInitialMovies);
     on<SearchMovies>(_onSearchMovies);
     on<GetMovie>(_onGetMovie);
+    on<RefreshMovies>(_onRefreshMovies);
   }
 
   // Busca uma lista aleatória de filmes
@@ -54,6 +56,16 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
       final movie = await omdbService.getMovie(event.query);
 
       emit(MovieLoaded(movie));
+    } catch (e) {
+      emit(MovieError(e.toString()));
+    }
+  }
+
+  // Recarrega os filmes na home
+  Future<void> _onRefreshMovies(RefreshMovies event, Emitter<MovieState> emit) async {
+    try {
+      List<MovieModel> movies = event.movies;
+      emit(MoviesLoaded(movies));
     } catch (e) {
       emit(MovieError(e.toString()));
     }

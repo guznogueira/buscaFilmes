@@ -1,30 +1,17 @@
 import 'package:busca_filmes/domain/entities/movie_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../application/movie/movie_bloc.dart';
-import '../details_movie.dart';
 
 class MovieCard extends StatelessWidget {
   final MovieModel movie;
+  final Function(MovieModel) onTap;
 
-  const MovieCard(this.movie, {super.key});
+  const MovieCard(this.movie, this.onTap, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: context.read<MovieBloc>(),
-              child: DetailsMovie(imdbId: movie.imdbId),
-            ),
-          ),
-        );
-      },
+      onTap: () => onTap(movie),
       child: Column(
         children: [
           Expanded(

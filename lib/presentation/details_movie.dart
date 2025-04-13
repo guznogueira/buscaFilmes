@@ -5,19 +5,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../application/movie/movie_bloc.dart';
 
-class DetailsMovie extends StatelessWidget {
+class DetailsMovie extends StatefulWidget {
   final String imdbId;
 
   const DetailsMovie({super.key, required this.imdbId});
 
   @override
-  Widget build(BuildContext context) {
-    context.read<MovieBloc>().add(GetMovie(imdbId));
+  State<DetailsMovie> createState() => _DetailsMovieState();
+}
 
+class _DetailsMovieState extends State<DetailsMovie> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<MovieBloc>().add(GetMovie(widget.imdbId));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes', style: TextStyle(color: Colors.white)),
-        leading: const BackButton(),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.blue,
         elevation: 4,
@@ -63,7 +77,6 @@ class DetailsMovie extends StatelessWidget {
                 ],
               );
             }
-
             return const SizedBox.shrink();
           },
         ),

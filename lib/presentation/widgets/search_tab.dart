@@ -1,20 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../application/movie/movie_bloc.dart';
 import '../../application/movie/movie_event.dart';
 import '../../application/movie/movie_state.dart';
-import '../../core/storage/movie_storage.dart';
+import '../details_movie.dart';
 import 'movie_grid.dart';
 
-class SearchTab extends StatelessWidget {
+class SearchTab extends StatefulWidget {
   const SearchTab({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController searchController = TextEditingController();
-    context.read<MovieBloc>().add(LoadInitialMovies());
+  State<SearchTab> createState() => _SearchTabState();
+}
 
+class _SearchTabState extends State<SearchTab> {
+  late TextEditingController searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    searchController = TextEditingController();
+    context.read<MovieBloc>().add(LoadInitialMovies());
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         // Campo de busca

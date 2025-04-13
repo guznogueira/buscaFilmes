@@ -1,6 +1,9 @@
 import 'package:busca_filmes/presentation/widgets/movie_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../application/movie/movie_bloc.dart';
+import '../../application/movie/movie_event.dart';
 import '../../domain/entities/movie_model.dart';
 import '../details_movie.dart';
 
@@ -22,8 +25,28 @@ class MovieGrid extends StatelessWidget {
       ),
       itemBuilder: (context, index) {
         final movie = movies[index];
-        return MovieCard(movie);
+        return MovieCard(
+          movie,
+          (movie) => _navigatorDetails(movie, context),
+        );
       },
     );
+  }
+
+  // Função ir para tela de detalhes, e recarregar a lista ao voltar
+  Future<void> _navigatorDetails(MovieModel movie, BuildContext context) async {
+    final bloc = context.read<MovieBloc>();
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider<MovieBloc>.value(
+          value: bloc,
+          child: DetailsMovie(imdbId: movie.imdbId),
+        ),
+      ),
+    );
+
+    bloc.add(RefreshMovies(movies));
   }
 }
