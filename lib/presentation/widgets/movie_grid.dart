@@ -4,13 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../application/movie/movie_bloc.dart';
 import '../../application/movie/movie_event.dart';
+import '../../core/constants/app_constants.dart';
 import '../../domain/entities/movie_model.dart';
 import '../details_movie.dart';
 
 class MovieGrid extends StatelessWidget {
   final List<MovieModel> movies;
+  final int tab;
 
-  const MovieGrid({super.key, required this.movies});
+  const MovieGrid({super.key, required this.movies, required this.tab});
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +49,8 @@ class MovieGrid extends StatelessWidget {
       ),
     );
 
-    bloc.add(RefreshListMovies(movies));
+    if (tab == AppConstants.tabSearch) {
+      bloc.add(RefreshListMovies());
+    }
   }
 }

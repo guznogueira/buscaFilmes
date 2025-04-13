@@ -20,8 +20,4 @@ class GetDetailsMovie extends MovieEvent {
 }
 
 // Evento recarrega lista de filmes da home
-class RefreshListMovies extends MovieEvent {
-  final List<MovieModel> listMovies;
-
-  RefreshListMovies(this.listMovies);
-}
+class RefreshListMovies extends MovieEvent {}

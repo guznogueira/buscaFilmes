@@ -49,7 +49,7 @@ class _DetailsMovieState extends State<DetailsMovie> {
             if (state is MovieLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is MovieError) {
-              return Center(child: Text('Erro: ${state.message}'));
+              return Center(child: Text('Erro: ${state.error}'));
             } else if (state is DetailsMovieLoaded) {
               final movie = state.movie;
               return ListView(
@@ -58,7 +58,7 @@ class _DetailsMovieState extends State<DetailsMovie> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Título
-                      Text(movie.title, style: Theme.of(context).textTheme.headlineSmall),
+                      Text(movie!.title, style: Theme.of(context).textTheme.headlineSmall),
                       const SizedBox(height: 12),
 
                       // Poster

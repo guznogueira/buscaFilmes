@@ -12,6 +12,8 @@ import 'movie_state.dart';
 class MovieBloc extends Bloc<MovieEvent, MovieState> {
   final OmdbService omdbService;
 
+  List<MovieModel> cachedMovies = [];
+
   MovieBloc(this.omdbService) : super(MovieInitial()) {
     on<LoadInitialMovies>(_onLoadInitialMovies);
     on<SearchMovies>(_onSearchMovies);
@@ -27,6 +29,7 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
       const genericTerms = AppConstants.genericTerms;
       final randomTerm = genericTerms[random.nextInt(genericTerms.length)];
       final movies = await omdbService.searchMovies(randomTerm);
+      cachedMovies = movies;
       emit(MoviesLoaded(movies));
     } catch (e) {
       emit(MovieError(e.toString()));
@@ -38,7 +41,7 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
     emit(MovieLoading());
     try {
       final movies = await omdbService.searchMovies(event.nameMovie);
-
+      cachedMovies = movies;
       emit(MoviesLoaded(movies));
     } catch (e) {
       emit(MovieError(e.toString()));
@@ -70,7 +73,7 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
   // Recarrega os filmes ao voltar para Home
   Future<void> _onRefreshListMovies(RefreshListMovies event, Emitter<MovieState> emit) async {
     try {
-      List<MovieModel> movies = event.listMovies;
+      List<MovieModel> movies = cachedMovies;
       emit(MoviesLoaded(movies));
     } catch (e) {
       emit(MovieError(e.toString()));

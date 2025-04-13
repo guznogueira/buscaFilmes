@@ -16,4 +16,7 @@ class AppConstants {
     "game",
     "city",
   ];
+
+  static const tabSearch = 0;
+  static const tabRecents = 1;
 }

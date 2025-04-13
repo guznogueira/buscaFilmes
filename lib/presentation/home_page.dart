@@ -14,43 +14,59 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   final genericTerms = AppConstants.genericTerms;
 
   @override
   void initState() {
     super.initState();
     context.read<MovieBloc>().add(LoadInitialMovies());
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_onTabChanged);
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_onTabChanged);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  // Controle da troca de abas
+  void _onTabChanged() {
+    if (_tabController.index == AppConstants.tabSearch) {
+      context.read<MovieBloc>().add(RefreshListMovies());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Catálogo de Filmes',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Buscar'),
-              Tab(text: 'Recentes'),
-            ],
-            indicatorColor: Colors.white,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Catálogo de Filmes',
+          style: TextStyle(color: Colors.white),
         ),
-        body: const TabBarView(
-          children: [
-            SearchTab(),
-            RecentTab(),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Buscar'),
+            Tab(text: 'Recentes'),
           ],
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          SearchTab(),
+          RecentTab(),
+        ],
       ),
     );
   }

@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../application/movie/movie_bloc.dart';
 import '../../application/movie/movie_event.dart';
 import '../../application/movie/movie_state.dart';
+import '../../core/constants/app_constants.dart';
+import '../../domain/entities/movie_model.dart';
 import 'movie_grid.dart';
 
 class SearchTab extends StatefulWidget {
@@ -14,6 +16,7 @@ class SearchTab extends StatefulWidget {
 }
 
 class _SearchTabState extends State<SearchTab> {
+  List<MovieModel> movies = [];
   late TextEditingController searchController;
   late FocusNode searchFocusNode;
   bool showClearIcon = false;
@@ -91,11 +94,12 @@ class _SearchTabState extends State<SearchTab> {
           child: BlocBuilder<MovieBloc, MovieState>(
             builder: (context, state) {
               if (state is MoviesLoaded) {
-                return MovieGrid(movies: state.listMovies);
+                movies = state.listMovies;
+                return MovieGrid(movies: state.listMovies, tab: AppConstants.tabSearch);
               } else if (state is MovieLoading) {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is MovieError) {
-                return Center(child: Text('Erro: ${state.message}'));
+                return Center(child: Text('Erro: ${state.error}'));
               }
               return const SizedBox.shrink();
             },
